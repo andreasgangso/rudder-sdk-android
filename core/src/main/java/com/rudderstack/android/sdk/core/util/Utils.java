@@ -5,20 +5,21 @@ import android.app.Application;
 import android.app.UiModeManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.ParseException;
 import android.net.Uri;
 import android.os.BadParcelableException;
 import android.os.Build;
-import android.os.Message;
+import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.rudderstack.android.sdk.core.RudderLogger;
 import com.rudderstack.android.sdk.core.RudderProperty;
+
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
@@ -81,7 +82,24 @@ public class Utils {
         return formatter.format(date);
     }
 
+    public static Boolean getDeviceIsAnonymous(Application application) {
+        try {
+            ApplicationInfo appInfo = application.getPackageManager().getApplicationInfo(application.getPackageName(), PackageManager.GET_META_DATA);
+            Bundle metaData = appInfo.metaData;
+            if (metaData != null) {
+                return metaData.getBoolean("rudder_device_is_anonymous", false);
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+        return false;
+    }
+
+    @Nullable
     public static String getDeviceId(Application application) {
+        if (getDeviceIsAnonymous(application)) {
+            return null;
+        }
         String androidId = getString(application.getContentResolver(), ANDROID_ID);
         if (!TextUtils.isEmpty(androidId)
                 && !"9774d56d682e549c".equals(androidId)
@@ -298,6 +316,7 @@ public class Utils {
         }
         return false;
     }
+
     @NonNull
     public static String appendSlashToUrl(@NonNull String dataPlaneUrl) {
         if (!dataPlaneUrl.endsWith("/")) dataPlaneUrl += "/";

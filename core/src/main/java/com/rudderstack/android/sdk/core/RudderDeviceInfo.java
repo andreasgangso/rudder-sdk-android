@@ -11,8 +11,11 @@ import com.rudderstack.android.sdk.core.util.Utils;
 
 import static com.rudderstack.android.sdk.core.util.Utils.isOnClassPath;
 
+import androidx.annotation.Nullable;
+
 class RudderDeviceInfo {
     @SerializedName("id")
+    @Nullable
     private String deviceId;
     @SerializedName("manufacturer")
     private String manufacturer = Build.MANUFACTURER;
@@ -40,6 +43,7 @@ class RudderDeviceInfo {
         }
     }
 
+    @Nullable
     String getDeviceId() {
         return deviceId;
     }
