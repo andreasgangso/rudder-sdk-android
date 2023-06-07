@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.rudderstack.android.sdk.core.util.Utils.isOnClassPath;
 
@@ -70,6 +72,9 @@ public class RudderContext {
 
         if (TextUtils.isEmpty(anonymousId)) {
             anonymousId = preferenceManger.getAnonymousId() != null ? preferenceManger.getAnonymousId() : Utils.getDeviceId(application);
+            if (anonymousId == null) {
+                anonymousId = UUID.randomUUID().toString();
+            }
         } else {
             preferenceManger.saveAnonymousId(anonymousId);
         }
